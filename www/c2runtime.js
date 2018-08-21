@@ -15083,13 +15083,13 @@ cr.system_object.prototype.loadFromJSON = function (o)
 		if (prevsol.select_all)
 		{
 			clonesol.select_all = true;
-			cr.clearArray(clonesol.else_instances);
 		}
 		else
 		{
 			clonesol.select_all = false;
 			cr.shallowAssignArray(clonesol.instances, prevsol.instances);
 		}
+		cr.clearArray(clonesol.else_instances);
 	};
 	cr.type_popSol = function ()
 	{
@@ -19034,7 +19034,7 @@ cr.plugins_.Browser = function(runtime)
 	var browserPluginReady = false;
 	document.addEventListener("DOMContentLoaded", function ()
 	{
-		if (window["C2_RegisterSW"] && navigator.serviceWorker)
+		if (window["C2_RegisterSW"] && navigator["serviceWorker"])
 		{
 			var offlineClientScript = document.createElement("script");
 			offlineClientScript.onload = function ()
@@ -19147,7 +19147,7 @@ cr.plugins_.Browser = function(runtime)
 	};
 	instanceProto.onSWMessage = function (e)
 	{
-		var messageType = e.data.type;
+		var messageType = e["data"]["type"];
 		if (messageType === "downloading-update")
 			this.runtime.trigger(cr.plugins_.Browser.prototype.cnds.OnUpdateFound, this);
 		else if (messageType === "update-ready" || messageType === "update-pending")
@@ -28002,13 +28002,13 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Audio,
 	cr.plugins_.Browser,
 	cr.plugins_.Function,
-	cr.plugins_.Mouse,
 	cr.plugins_.Particles,
+	cr.plugins_.Mouse,
 	cr.plugins_.Spritefont2,
-	cr.plugins_.Text,
 	cr.plugins_.Sprite,
-	cr.plugins_.Touch,
+	cr.plugins_.Text,
 	cr.plugins_.WebStorage,
+	cr.plugins_.Touch,
 	cr.behaviors.Pin,
 	cr.behaviors.DragnDrop,
 	cr.behaviors.Sin,
@@ -28027,6 +28027,7 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Sprite.prototype.acts.SetVisible,
 	cr.plugins_.WebStorage.prototype.acts.ClearLocal,
 	cr.system_object.prototype.acts.SetLayerVisible,
+	cr.plugins_.admob.prototype.acts.PreloadBanner,
 	cr.plugins_.admob.prototype.acts.ShowBanner,
 	cr.system_object.prototype.cnds.EveryTick,
 	cr.plugins_.Sprite.prototype.acts.SetX,
