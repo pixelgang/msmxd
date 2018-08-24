@@ -18,10 +18,8 @@
 	<preference name="android-minSdkVersion" value="21" />
 	<access origin="*" />
 
-	<plugin name="cordova-plugin-ad-admob" />
 	<plugin name="cordova-plugin-inappbrowser" />
 	<plugin name="cordova-plugin-whitelist" />
-	<plugin name="enhance-cordova-connector" />
 
 
 	<engine name="ios" />
