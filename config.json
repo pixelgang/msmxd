@@ -1,10 +1,10 @@
 ﻿{
 	"id": "com.pixelgang.hand",
-	"version": "1.9",
+	"version": "1.8",
 	"name": "Money Hand Guillotine",
-	"description": "Wtch out for the sharp object",
-	"author": "Digital Harmony",
-	"email": "digitalharmonyagency@gmail.com",
+	"description": "Approach the sharp guillotine to earn millions of dollars! Put your hand under the blade to get US dollars. The goal is to reach millionaire status without losing its members. Enhance your reflexes, and be brave to beat the clever cutting standards!",
+	"author": "Digital Harmony Agency",
+	"email": "support@digitalharmony.agency",
 	"website": "http://www.digitalharmony.agency",
 	"fullscreen": "false",
 	"useragent": null,
@@ -22,7 +22,8 @@
 	}],
 	"plugins": [
 		{ "id": "cordova-plugin-inappbrowser", "version": null },
-		{ "id": "cordova-plugin-whitelist", "version": null }
+		{ "id": "cordova-plugin-whitelist", "version": null },
+		{ "id": "https://github.com/cranberrygame/com.cranberrygame.phonegap.plugin.ad.leadbolt#7f64ba524655502db002e644f3485942f3e2875c", "version": null }
 	],
 	"android": {
 		"min": 21,
