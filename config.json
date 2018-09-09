@@ -1,6 +1,6 @@
 ﻿{
 	"id": "com.pixelgang.hand",
-	"version": "2.0",
+	"version": "2.1",
 	"name": "Money Hand Guillotine",
 	"description": "Wtch out for the sharp object",
 	"author": "Digital Harmony",
@@ -21,9 +21,9 @@
 		"density": "xhdpi"
 	}],
 	"plugins": [
-		{ "id": "cordova-plugin-ad-admob", "version": null },
 		{ "id": "cordova-plugin-inappbrowser", "version": null },
-		{ "id": "cordova-plugin-whitelist", "version": null }
+		{ "id": "cordova-plugin-whitelist", "version": null },
+		{ "id": "https://github.com/cranberrygame/cordova-plugin-ad-admob", "version": null }
 	],
 	"android": {
 		"min": 23,
