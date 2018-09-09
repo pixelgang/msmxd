@@ -28175,6 +28175,7 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Sprite.prototype.cnds.CompareX,
 	cr.system_object.prototype.acts.AddVar,
 	cr.system_object.prototype.acts.GoToLayout,
+	cr.plugins_.cranberrygame_CordovaAdmob.prototype.acts.ShowInterstitialAd,
 	cr.plugins_.Particles.prototype.acts.SetPosToObject,
 	cr.plugins_.Particles.prototype.cnds.IsOutsideLayout,
 	cr.plugins_.Particles.prototype.acts.Destroy,
@@ -28203,7 +28204,6 @@ cr.getObjectRefTable = function () { return [
 	cr.system_object.prototype.acts.ResetGlobals,
 	cr.plugins_.Spritefont2.prototype.cnds.CompareInstanceVar,
 	cr.plugins_.Spritefont2.prototype.acts.SetY,
-	cr.plugins_.cranberrygame_CordovaAdmob.prototype.acts.ShowInterstitialAd,
 	cr.plugins_.Audio.prototype.acts.Preload,
 	cr.system_object.prototype.cnds.OnLayoutEnd,
 	cr.plugins_.Audio.prototype.acts.StopAll
