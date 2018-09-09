@@ -3736,7 +3736,7 @@ quat4.str=function(a){return"["+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+"]"};
 					"failIfMajorPerformanceCaveat": true
 				};
 				this.gl = (this.canvas.getContext("webgl1", attribs) ||
-						   
+						  
 						   this.canvas.getContext("experimental-webgl", attribs));
 			}
 		}
