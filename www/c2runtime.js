@@ -3735,8 +3735,8 @@ quat4.str=function(a){return"["+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+"]"};
 					"powerPreference": "high-performance",
 					"failIfMajorPerformanceCaveat": true
 				};
-				this.gl = (this.canvas.getContext("webgl2", attribs) ||
-						   this.canvas.getContext("webgl", attribs) ||
+				this.gl = (this.canvas.getContext("webgl1", attribs) ||
+						  
 						   this.canvas.getContext("experimental-webgl", attribs));
 			}
 		}
@@ -19816,749 +19816,6 @@ cr.plugins_.Browser = function(runtime)
 }());
 ;
 ;
-cr.plugins_.CV_MobileMasterIAP = function(runtime)
-{
-	this.runtime = runtime;
-};
-(function ()
-{
-	var pluginProto = cr.plugins_.CV_MobileMasterIAP.prototype;
-	pluginProto.Type = function(plugin)
-	{
-		this.plugin = plugin;
-		this.runtime = plugin.runtime;
-	};
-	var typeProto = pluginProto.Type.prototype;
-	typeProto.onCreate = function()
-	{
-	};
-	pluginProto.Instance = function(type)
-	{
-		this.type = type;
-		this.runtime = type.runtime;
-	};
-	var instanceProto = pluginProto.Instance.prototype;
-	instanceProto.onCreate = function()
-	{
-		if (!this.dependenciesCleared())
-		{
-			return;
-		}
-		this.installedProducts = {};
-		this.errorMessage = "";
-		this.boughtProducts = [];
-		this.subscribedProducts = [];
-		this.recentPurchaseProductID = "";
-		this.recentSubscriptionProductID = "";
-		this.loopProductID = "";
-		this.hasInitialized = false;
-	};
-	instanceProto.dependenciesCleared = function()
-	{
-		if ( typeof inAppPurchase == 'undefined' )
-		{
-			var errorMsg = "Error :: Cordova Application : InAppPurchase must be installed.";
-			debugLog("Error: Cordova Application");
-			debugLog(errorMsg);
-			this.errorMessage = errorMsg;
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, this);
-			return false;
-		}
-		this.inAppPurchase = inAppPurchase;
-		if ( ! (this.runtime.isAndroid || this.runtime.isiOS))
-		{
-			var errorMsg = "Error :: OS Platform : Application must be on a mobile device. Android or IOS.";
-			debugLog("Error: OS Platform");
-			debugLog(errorMsg);
-			this.errorMessage = errorMsg;
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, this);
-			return false;
-		}
-		return true;
-	};
-	instanceProto.hasInstalledProductID = function(productID_)
-	{
-		return this.installedProducts.hasOwnProperty(productID_);
-	}
-	instanceProto.getProductType = function(productID_)
-	{
-		if ( this.hasInstalledProductID(productID_) )
-		{
-			if ( this.installedProducts[productID_].hasOwnProperty("productType") )
-			{
-				var output = this.installedProducts[productID_]["productType"];
-				return output;
-			}
-			else
-			{
-				return -1;
-			}
-		}
-		else
-		{
-			return -1;
-		}
-	}
-	instanceProto.onDestroy = function ()
-	{
-	};
-	instanceProto.saveToJSON = function ()
-	{
-	};
-	instanceProto.loadFromJSON = function (o)
-	{
-	};
-	instanceProto.draw = function(ctx)
-	{
-	};
-	instanceProto.drawGL = function (glw)
-	{
-	};
-	function Cnds() {};
-	Cnds.prototype.onError = function ()
-	{
-		return true;
-	};
-	Cnds.prototype.onInitializeSucceeded = function ()
-	{
-		return true;
-	};
-	Cnds.prototype.onInitializeFailed = function ()
-	{
-		return true;
-	};
-	Cnds.prototype.onPurchaseSucceeded = function ()
-	{
-		return true;
-	};
-	Cnds.prototype.onPurchaseFailed = function ()
-	{
-		return true;
-	};
-	Cnds.prototype.onSubscriptionSucceeded = function ()
-	{
-		return true;
-	};
-	Cnds.prototype.onSubscriptionFailed = function ()
-	{
-		return true;
-	};
-	Cnds.prototype.forEachProduct = function ()
-	{
-		if (!this.dependenciesCleared())
-		{
-			return true;
-		}
-		if (!this.hasInitialized == true)
-		{
-			return true;
-		}
-		var currentEvent = this.runtime.getCurrentEventStack().current_event;
-        for (var productID in this.installedProducts)
-        {
-			if ( ! this.installedProducts.hasOwnProperty(productID) )
-			{
-				continue;
-			}
-			this.loopProductID = productID;
-            this.runtime.pushCopySol(currentEvent.solModifiers);
-            currentEvent.retrigger();
-			this.runtime.popSol(currentEvent.solModifiers);
-        }
-        this.loopProductID = "";
-        return false;
-	};
-	Cnds.prototype.hasPaidProduct = function (productID_)
-	{
-		if (!this.dependenciesCleared())
-		{
-			return false;
-		}
-		if (!this.hasInitialized == true)
-		{
-			return false;
-		}
-		productID_ = productID_.toLowerCase();
-		var mergedProductsList = [];
-		var array1 = [];
-		var array2 = [];
-		array1 = this.boughtProducts;
-		array2 = this.subscribedProducts;
-		mergedProductsList = array1.concat(array2);
-		return ( mergedProductsList.indexOf(productID_) !== -1 );
-	};
-	Cnds.prototype.comparePurchaseProductID = function (productID_)
-	{
-		var baseID = this.recentSubscriptionProductID;
-		productID_ = productID_.toLowerCase();
-		return (productID_ === baseID);
-	};
-	Cnds.prototype.compareSubscriptionProductID = function (productID_)
-	{
-		var baseID = this.recentPurchaseProductID;
-		productID_ = productID_.toLowerCase();
-		return (productID_ === baseID);
-	};
-	Cnds.prototype.onRestorePurchasesSucceeded = function ()
-	{
-		return true;
-	};
-	Cnds.prototype.onRestorePurchasesFailed = function ()
-	{
-		return true;
-	};
-	pluginProto.cnds = new Cnds();
-	function Acts() {};
-	Acts.prototype.initialize = function ()
-	{
-		if (!this.dependenciesCleared())
-		{
-			return;
-		}
-		if (this.hasInitialized == true)
-		{
-			return;
-		}
-		var productsList = [];
-		for (var len in this.installedProducts)
-		{
-			if ( this.installedProducts.hasOwnProperty(len) )
-			{
-				if ( productsList.indexOf(len) === -1 )
-				{
-					productsList.push(len);
-				}
-				else
-				{
-					debugLog("Warning: Initialization");
-					debugLog("Tried to initialize a duplicate Product ID. Please review your code/events.");
-				}
-			}
-		}
-		debugLog("Products List :");
-		debugLog(productsList);
-		var self;
-		self = this;
-		self.inAppPurchase
-			.getProducts(productsList)
-			.then(function (products) {
-				/*
-				[{ productId: 'com.yourapp.prod1', 'title': '...', description: '...', currency: '...', price: '...', priceAsDecimal: '...' }, ...]
-				*/
-				products.forEach(function(element)
-				{
-					var elemProductID = element['productId'];
-					var elemTitle = element['title'];
-					var elemDescription = element['description'];
-					var elemCurrency = element['currency'];
-					var elemPrice = element['price'];
-					var elemPriceAsDecimal = element['priceAsDecimal'];
-					if ( self.installedProducts.hasOwnProperty(elemProductID) )
-					{
-						self.installedProducts[elemProductID]['title'] = elemTitle;
-						self.installedProducts[elemProductID]['description'] = elemDescription;
-						self.installedProducts[elemProductID]['currency'] = elemCurrency;
-						self.installedProducts[elemProductID]['price'] = elemPrice;
-						self.installedProducts[elemProductID]['priceAsDecimal'] = elemPriceAsDecimal;
-					}
-				});
-				debugLog("After Initialized - Installed List :");
-				debugLog(self.installedProducts);
-				self.hasInitialized = true;
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onInitializeSucceeded, self);
-			})
-			.catch(function (err) {
-				debugLog("Error: Initialization");
-				debugLog(err);
-				self.errorMessage = err['message'];
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, self);
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onInitializeFailed, self);
-  			});
-	};
-	Acts.prototype.installProduct = function (productID_, productType_)
-	{
-		if (!this.dependenciesCleared())
-		{
-			return;
-		}
-		if (this.hasInitialized == true)
-		{
-			return;
-		}
-		productID_ = productID_.toLowerCase();
-		if ( this.hasInstalledProductID(productID_) )
-		{
-			debugLog("Warning: Purchase Product Installation");
-			debugLog("Tried to install a duplicate Purchase Product ID. Please review your code/events.");
-			return;
-		}
-		if (productType_ === 0)
-		{
-			this.installedProducts[productID_] =
-			{
-				productType :  0, //Non-Consumable
-			};
-		}
-		else
-		{
-			this.installedProducts[productID_] =
-			{
-				productType :  1, //Consumable
-			};
-		}
-	};
-	Acts.prototype.installSubscription = function (productID_)
-	{
-		if (!this.dependenciesCleared())
-		{
-			return;
-		}
-		if (this.hasInitialized == true)
-		{
-			return;
-		}
-		productID_ = productID_.toLowerCase();
-		if ( this.hasInstalledProductID(productID_) )
-		{
-			debugLog("Warning: Subscription Product Installation");
-			debugLog("Tried to install a duplicate Subscription Product ID. Please review your code/events.");
-			return;
-		}
-		this.installedProducts[productID_] =
-		{
-			productType :  2 //Subscription
-		};
-	};
-	Acts.prototype.purchaseProduct = function (productID_)
-	{
-		if (!this.dependenciesCleared())
-		{
-			return;
-		}
-		if (!this.hasInitialized == true)
-		{
-			return;
-		}
-		productID_ = productID_.toLowerCase();
-		this.recentPurchaseProductID = productID_;
-		if ( ! this.hasInstalledProductID(productID_) )
-		{
-			var errorMsg = "Error :: Product Purchase : This Product ID (" + productID_ + ") was not installed before initialization.";
-			debugLog("Error: Product Purchase : Check if installed");
-			debugLog(errorMsg);
-			this.errorMessage = errorMsg;
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, this);
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onPurchaseFailed, this);
-			return;
-		}
-		var productType = this.getProductType(productID_);
-		if ( ! (productType === 0 || productType === 1) )
-		{
-			var errorMsg = "Error :: Product Purchase : This Product ID (" + productID_ + ") is not a purchase product but a subscription.";
-			debugLog("Error: Product Purchase : Check if Purchase Type");
-			debugLog(errorMsg);
-			this.errorMessage = errorMsg;
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, this);
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onPurchaseFailed, this);
-			return;
-		}
-		var self = this;
-		self.inAppPurchase
-			.buy(productID_)
-			.then(function (purchaseData) {
-				/*
-				{
-					transactionId: ...
-					receipt: ...
-					signature: ...
-					productType: (Not Sure if this exists)
-				}
-				*/
-				if (productType === 1) // If Consumable
-				{
-					self.inAppPurchase.consume(purchaseData.productType, purchaseData.receipt, purchaseData.signature);
-				}
-				else (productType === 0)
-				{
-					if (self.boughtProducts.indexOf(productID_) === -1)
-					{
-						self.boughtProducts.push(productID_);
-					}
-				}
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onPurchaseSucceeded, self);
-			})
-			.then(function () {
-				debugLog("Log :: Product Consumed");
-				debugLog("The Product with the ID (" + productID_ + ") was successfully consumed.");
-			  })
-			.catch(function (err) {
-				debugLog("Error: Product Purchase : Promise Catch");
-				debugLog(err);
-				self.errorMessage = err['message'];
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, self);
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onPurchaseFailed, self);
-		});
-	};
-	Acts.prototype.subscribeProduct = function (productID_)
-	{
-		if (!this.dependenciesCleared())
-		{
-			return;
-		}
-		if (!this.hasInitialized == true)
-		{
-			return;
-		}
-		productID_ = productID_.toLowerCase();
-		this.recentSubscriptionProductID = productID_;
-		if ( ! this.hasInstalledProductID(productID_) )
-		{
-			var errorMsg = "Error :: Subscription Purchase : This Product ID (" + productID_ + ") was not installed before initialization.";
-			debugLog("Error: Subscription Purchase : Check if installed");
-			debugLog(errorMsg);
-			this.errorMessage = errorMsg;
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, this);
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onSubscriptionFailed, this);
-			return;
-		}
-		var productType = this.getProductType(productID_);
-		if ( ! (productType === 2) )
-		{
-			var errorMsg = "Error :: Subscription Purchase : This Product ID (" + productID_ + ") is not a subscription product but a purchase.";
-			debugLog("Error: Subscription Purchase : Check if Subscription Type");
-			debugLog(errorMsg);
-			this.errorMessage = errorMsg;
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, this);
-			this.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onSubscriptionFailed, this);
-			return;
-		}
-		var self = this;
-		self.inAppPurchase
-			.buy(productID_)
-			.then(function (subscriptionData) {
-				/*
-				{
-					transactionId: ...
-					receipt: ...
-					signature: ...
-					productType: (Not Sure if this exists)
-				}
-				*/
-				if (self.subscribedProducts.indexOf(productID_) === -1)
-				{
-					self.subscribedProducts.push(productID_);
-				}
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onSubscriptionSucceeded, self);
-			})
-			.catch(function (err) {
-				debugLog("Error: Subscription Purchase : Promise Catch");
-				debugLog(err);
-				self.errorMessage = err['message'];
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, self);
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onSubscriptionFailed, self);
-		});
-	};
-	Acts.prototype.restorePurchases = function ()
-	{
-		if (!this.dependenciesCleared())
-		{
-			return;
-		}
-		if (!this.hasInitialized == true)
-		{
-			return;
-		}
-		var self = this;
-		this.inAppPurchase
-			.restorePurchases()
-			.then(function (restoreData) {
-				/*
-				[{
-					transactionId: ...
-					productId: ...
-					state: ...
-					date: ...
-				}]
-				*/
-				function recordToPurchase(productID_)
-				{
-					if (self.boughtProducts.indexOf(productID_) === -1)
-					{
-						self.boughtProducts.push(productID_);
-					}
-				}
-				function recordToSubscription(productID_)
-				{
-					if (self.subscribedProducts.indexOf(productID_) === -1)
-					{
-						self.subscribedProducts.push(productID_);
-					}
-				}
-				restoreData.forEach(function(element)
-				{
-					var elemProductID = element['productId'];
-					var isInstalled = self.hasInstalledProductID(elemProductID)
-					if (!isInstalled)
-					{
-						return;
-					}
-					var productType = self.getProductType(elemProductID);
-					if (productType === 0)
-					{
-						recordToPurchase(elemProductID);
-					}
-					else if (productType === 1)
-					{
-						debugLog("Warning :: Attempted to restore a consumed product.");
-					}
-					else if (productType === 2)
-					{
-						recordToSubscription(elemProductID);
-					}
-				});
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onRestorePurchasesSucceeded, self);
-			})
-			.catch(function (err) {
-				debugLog("Error: Restore Purchases : Promise Catch");
-				debugLog(err);
-				self.errorMessage = err['message'];
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onError, self);
-				self.runtime.trigger(cr.plugins_.CV_MobileMasterIAP.prototype.cnds.onRestorePurchasesFailed, self);
-			});
-	};
-	pluginProto.acts = new Acts();
-	function Exps() {};
-	Exps.prototype.errorMessage = function (ret)
-	{
-		ret.set_string(this.errorMessage);
-	};
-	Exps.prototype.recentPurchaseProductID = function (ret)
-	{
-		ret.set_string(this.recentPurchaseProductID);
-	};
-	Exps.prototype.recentSubscriptionProductID = function (ret)
-	{
-		ret.set_string(this.recentSubscriptionProductID);
-	};
-	Exps.prototype.getProductTitle = function (ret, productID_)
-	{
-		var gate1 = false;
-		var gate2 = false;
-		if (this.dependenciesCleared())
-		{
-			gate1 = true;
-		}
-		if (this.hasInitialized == true)
-		{
-			gate2 = true;
-		}
-		productID_ = productID_.toLowerCase();
-		if (gate1 && gate2)
-		{
-			if ( this.hasInstalledProductID(productID_) )
-			{
-				if ( this.installedProducts[productID_].hasOwnProperty("title") )
-				{
-					var output = this.installedProducts[productID_]["title"];
-					ret.set_string(output);
-				}
-				else
-				{
-					ret.set_string("");
-				}
-			}
-			else
-			{
-				ret.set_string("");
-			}
-		}
-		else
-		{
-			ret.set_string("");
-		}
-	};
-	Exps.prototype.getProductDescription = function (ret, productID_)
-	{
-		var gate1 = false;
-		var gate2 = false;
-		if (this.dependenciesCleared())
-		{
-			gate1 = true;
-		}
-		if (this.hasInitialized == true)
-		{
-			gate2 = true;
-		}
-		productID_ = productID_.toLowerCase();
-		if (gate1 && gate2)
-		{
-			if ( this.hasInstalledProductID(productID_) )
-			{
-				if ( this.installedProducts[productID_].hasOwnProperty("description") )
-				{
-					var output = this.installedProducts[productID_]["description"];
-					ret.set_string(output);
-				}
-				else
-				{
-					ret.set_string("");
-				}
-			}
-			else
-			{
-				ret.set_string("");
-			}
-		}
-		else
-		{
-			ret.set_string("");
-		}
-	};
-	Exps.prototype.getProductCurrency = function (ret, productID_)
-	{
-		var gate1 = false;
-		var gate2 = false;
-		if (this.dependenciesCleared())
-		{
-			gate1 = true;
-		}
-		if (this.hasInitialized == true)
-		{
-			gate2 = true;
-		}
-		productID_ = productID_.toLowerCase();
-		if (gate1 && gate2)
-		{
-			if ( this.hasInstalledProductID(productID_) )
-			{
-				if ( this.installedProducts[productID_].hasOwnProperty("currency") )
-				{
-					var output = this.installedProducts[productID_]["currency"];
-					ret.set_string(output);
-				}
-				else
-				{
-					ret.set_string("");
-				}
-			}
-			else
-			{
-				ret.set_string("");
-			}
-		}
-		else
-		{
-			ret.set_string("");
-		}
-	};
-	Exps.prototype.getProductLocalizedPrice = function (ret, productID_)
-	{
-		var gate1 = false;
-		var gate2 = false;
-		if (this.dependenciesCleared())
-		{
-			gate1 = true;
-		}
-		if (this.hasInitialized == true)
-		{
-			gate2 = true;
-		}
-		productID_ = productID_.toLowerCase();
-		if (gate1 && gate2)
-		{
-			if ( this.hasInstalledProductID(productID_) )
-			{
-				if ( this.installedProducts[productID_].hasOwnProperty("price") )
-				{
-					var output = this.installedProducts[productID_]["price"];
-					ret.set_string(output);
-				}
-				else
-				{
-					ret.set_string("");
-				}
-			}
-			else
-			{
-				ret.set_string("");
-			}
-		}
-		else
-		{
-			ret.set_string("");
-		}
-	};
-	Exps.prototype.getProductDecimalPrice = function (ret, productID_)
-	{
-		var gate1 = false;
-		var gate2 = false;
-		if (this.dependenciesCleared())
-		{
-			gate1 = true;
-		}
-		if (this.hasInitialized == true)
-		{
-			gate2 = true;
-		}
-		productID_ = productID_.toLowerCase();
-		if (gate1 && gate2)
-		{
-			if ( this.hasInstalledProductID(productID_) )
-			{
-				if ( this.installedProducts[productID_].hasOwnProperty("priceAsDecimal") )
-				{
-					var output = this.installedProducts[productID_]["priceAsDecimal"];
-					ret.set_float(output);
-				}
-				else
-				{
-					ret.set_float(-1);
-				}
-			}
-			else
-			{
-				ret.set_float(-1);
-			}
-		}
-		else
-		{
-			ret.set_float(-1);
-		}
-	};
-	Exps.prototype.getProductType = function (ret, productID_)
-	{
-		var gate1 = false;
-		var gate2 = false;
-		if (this.dependenciesCleared())
-		{
-			gate1 = true;
-		}
-		if (this.hasInitialized == true)
-		{
-			gate2 = true;
-		}
-		productID_ = productID_.toLowerCase();
-		if (gate1 && gate2)
-		{
-			ret.set_int( this.getProductType(productID_) );
-		}
-		else
-		{
-			ret.set_int(-1);
-		}
-	};
-	Exps.prototype.loopProductID = function (ret)
-	{
-		ret.set_string(this.loopProductID);
-	};
-	pluginProto.exps = new Exps();
-	function debugLog(message)
-	{
-		console.log(message);
-	}
-}());
-;
-;
 cr.plugins_.Function = function(runtime)
 {
 	this.runtime = runtime;
@@ -21613,256 +20870,6 @@ cr.plugins_.Particles = function(runtime)
 	{
 		ret.set_float(this.timeout);
 	};
-	pluginProto.exps = new Exps();
-}());
-;
-;
-/*
-cr.plugins_.PhonegapLeadbolt = function(runtime)
-{
-	this.runtime = runtime;
-	Type
-		onCreate
-	Instance
-		onCreate
-		draw
-		drawGL
-	cnds
-	acts
-	exps
-};
-*/
-cr.plugins_.PhonegapLeadbolt = function(runtime)
-{
-	this.runtime = runtime;
-};
-(function ()
-{
-	var pluginProto = cr.plugins_.PhonegapLeadbolt.prototype;
-	pluginProto.Type = function(plugin)
-	{
-		this.plugin = plugin;
-		this.runtime = plugin.runtime;
-	};
-	var typeProto = pluginProto.Type.prototype;
-	typeProto.onCreate = function()
-	{
-/*
-		var newScriptTag=document.createElement('script');
-		newScriptTag.setAttribute("type","text/javascript");
-		newScriptTag.setAttribute("src", "mylib.js");
-		document.getElementsByTagName("head")[0].appendChild(newScriptTag);
-		var scripts=document.getElementsByTagName("script");
-		var scriptExist=false;
-		for(var i=0;i<scripts.length;i++){
-			if(scripts[i].src.indexOf("cordova.js")!=-1||scripts[i].src.indexOf("phonegap.js")!=-1){
-				scriptExist=true;
-				break;
-			}
-		}
-		if(!scriptExist){
-			var newScriptTag=document.createElement("script");
-			newScriptTag.setAttribute("type","text/javascript");
-			newScriptTag.setAttribute("src", "cordova.js");
-			document.getElementsByTagName("head")[0].appendChild(newScriptTag);
-		}
-*/
-		if(this.runtime.isBlackberry10 || this.runtime.isWindows8App || this.runtime.isWindowsPhone8 || this.runtime.isWindowsPhone81){
-			var scripts=document.getElementsByTagName("script");
-			var scriptExist=false;
-			for(var i=0;i<scripts.length;i++){
-				if(scripts[i].src.indexOf("cordova.js")!=-1||scripts[i].src.indexOf("phonegap.js")!=-1){
-					scriptExist=true;
-					break;
-				}
-			}
-			if(!scriptExist){
-				var newScriptTag=document.createElement("script");
-				newScriptTag.setAttribute("type","text/javascript");
-				newScriptTag.setAttribute("src", "cordova.js");
-				document.getElementsByTagName("head")[0].appendChild(newScriptTag);
-			}
-		}
-	};
-	pluginProto.Instance = function(type)
-	{
-		this.type = type;
-		this.runtime = type.runtime;
-	};
-	var instanceProto = pluginProto.Instance.prototype;
-	instanceProto.onCreate = function()
-	{
-/*
-		var self=this;
-		window.addEventListener("resize", function () {//cranberrygame
-			self.runtime.trigger(cr.plugins_.PhonegapLeadbolt.prototype.cnds.TriggerCondition, self);
-		});
-*/
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-		if (this.runtime.isAndroid) {
-			this.appAdAlertSectionId=this.properties[0];
-			this.appAdBannerSectionId=this.properties[1];
-			this.appAdOfferWallSectionId=this.properties[2];
-			this.appAdInterstitialSectionId=this.properties[3];
-			this.audioAdSectionId=this.properties[4];
-		}
-		else if (this.runtime.isiOS) {
-			this.appAdAlertSectionId=this.properties[5];
-			this.appAdBannerSectionId=this.properties[6];
-			this.appAdOfferWallSectionId=this.properties[7];
-			this.appAdInterstitialSectionId=this.properties[8];
-			this.audioAdSectionId=this.properties[9];
-		}
-		window["leadbolt"]["setUp"](this.appAdAlertSectionId, this.appAdBannerSectionId, this.appAdOfferWallSectionId, this.appAdInterstitialSectionId, this.audioAdSectionId);
-	};
-	instanceProto.draw = function(ctx)
-	{
-	};
-	instanceProto.drawGL = function (glw)
-	{
-	};
-/*
-	instanceProto.at = function (x)
-	{
-		return this.arr[x];
-	};
-	instanceProto.set = function (x, val)
-	{
-		this.arr[x] = val;
-	};
-*/
-	function Cnds() {};
-/*
-	Cnds.prototype.MyCondition = function (myparam)
-	{
-		return myparam >= 0;
-	};
-	Cnds.prototype.TriggerCondition = function ()
-	{
-		return true;
-	};
-*/
-	Cnds.prototype.OnUseReengagementSuccess = function ()
-	{
-		return true;
-	};
-	Cnds.prototype.OnUseReengagementFailed = function ()
-	{
-		return true;
-	};
-	pluginProto.cnds = new Cnds();
-	function Acts() {};
-/*
-	Acts.prototype.MyAction = function (myparam)
-	{
-		alert(myparam);
-	};
-	Acts.prototype.TriggerAction = function ()
-	{
-		var self=this;
-		self.runtime.trigger(cr.plugins_.PhonegapLeadbolt.prototype.cnds.TriggerCondition, self);
-	};
-*/
-	Acts.prototype.ShowAppAdAlert = function ()
-	{
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-		window["leadbolt"]["showAppAdAlert"]();
-	};
-	Acts.prototype.ShowAppBanner = function ()
-	{
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-		window["leadbolt"]["showAppBanner"]();
-	};
-	Acts.prototype.ShowAppAdOfferWall = function ()
-	{
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-		window["leadbolt"]["showAppAdOfferWall"]();
-	};
-	Acts.prototype.ShowAppAdInterstitial = function ()
-	{
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-		window["leadbolt"]["showAppAdInterstitial"]();
-	};
-	Acts.prototype.ShowAudioAd = function ()
-	{
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-        window["leadbolt"]["showAudioAd"]();
-	};
-	Acts.prototype.ShowAudioTrackAd = function ()
-	{
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-/*
-        window["AdController"]["loadAudioTrack"](this.audioAdSectionId, 2);
-*/
-	};
-	Acts.prototype.HideAds = function ()
-	{
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-		window["leadbolt"]["hideAds"]();
-	};
-	Acts.prototype.UseReengagement = function ()
-	{
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-		var self=this;
-/*
-        window["AdController"]["loadReEngagement"](self.reengagementSectionId,
-		function(info){
-			self.runtime.trigger(cr.plugins_.PhonegapLeadbolt.prototype.cnds.OnUseReengagementSuccess, self);
-		},
-		function(error){
-			self.runtime.trigger(cr.plugins_.PhonegapLeadbolt.prototype.cnds.OnUseReengagementFailed, self);
-		});
-*/
-	};
-	Acts.prototype.ShowQuickStartAd = function ()
-	{
-		if (!(this.runtime.isAndroid || this.runtime.isiOS))
-			return;
-        if (typeof window["leadbolt"] == 'undefined')
-            return;
-/*
-        window["AdController"]["loadStartAd"](this.appAdAlertSectionId, this.audioAdSectionId, this.reengagementSectionId);
-*/
-	};
-	pluginProto.acts = new Acts();
-	function Exps() {};
-/*
-	Exps.prototype.MyExpression = function (ret)	// 'ret' must always be the first parameter - always return the expression's result through it!
-	{
-		ret.set_int(1337);				// return our value
-	};
-	Exps.prototype.Text = function (ret, param) //cranberrygame
-	{
-		ret.set_string("Hello");		// for ef_return_string
-	};
-*/
 	pluginProto.exps = new Exps();
 }());
 ;
@@ -25968,6 +24975,231 @@ cr.plugins_.WebStorage = function(runtime)
 	};
 	pluginProto.exps = new Exps();
 }());
+/* Copyright (c) 2014 Intel Corporation. All rights reserved.
+* Use of this source code is governed by a MIT-style license that can be
+* found in the LICENSE file.
+*/
+;
+;
+cr.plugins_.admob = function(runtime)
+{
+	this.runtime = runtime;
+};
+(function ()
+{
+	var pluginProto = cr.plugins_.admob.prototype;
+	pluginProto.Type = function(plugin)
+	{
+		this.plugin = plugin;
+		this.runtime = plugin.runtime;
+	};
+	var typeProto = pluginProto.Type.prototype;
+	typeProto.onCreate = function()
+	{
+	};
+	pluginProto.Instance = function(type)
+	{
+		this.type = type;
+		this.runtime = type.runtime;
+	};
+	var instanceProto = pluginProto.Instance.prototype;
+	var isSupported = false;
+	instanceProto.onCreate = function()
+	{
+		if (!window["admob"])
+		{
+			cr.logexport("[Construct 2] com.cranberrygame.phonegap.plugin.ad.admob plugin is required to show Admob ads with Cordova; other platforms are not supported");
+			return;
+		}
+		isSupported = true;
+		this.AdMob = window["admob"];
+		if (this.AdMob["setLicenseKey"])
+			this.AdMob["setLicenseKey"]("support@scirra.com", "2ba99d4ff8c219cf7331c88fb3344f80");
+		var overlap = (this.properties[0] !== 0);
+		var isTesting = (this.properties[1] !== 0);
+		this.androidBannerId = this.properties[2];
+		this.androidInterstitialId = this.properties[3];
+		this.iosBannerId = this.properties[4];
+		this.iosInterstitialId = this.properties[5];
+		this.wp8BannerId = this.properties[6];
+		this.wp8InterstitialId = this.properties[7];
+		if (this.runtime.isAndroid)
+		{
+			this.bannerId = this.androidBannerId;
+			this.interstitialId = this.androidInterstitialId;
+		}
+		else if (this.runtime.isiOS)
+		{
+			this.bannerId = this.iosBannerId;
+			this.interstitialId = this.iosInterstitialId;
+		}
+		else if (this.runtime.isWindowsPhone8 || this.runtime.isWindowsPhone81)
+		{
+			this.bannerId = this.wp8BannerId;
+			this.interstitialId = this.wp8InterstitialId;
+		}
+		else
+		{
+			this.bannerId = "";
+			this.interstitialId = "";
+		}
+		this.isShowingBannerAd = false;
+		this.isShowingInterstitial = false;
+		this.AdMob["setUp"](this.bannerId, this.interstitialId, overlap, isTesting);
+		var self = this;
+		this.AdMob["onFullScreenAdLoaded"] = function ()
+		{
+			self.runtime.trigger(cr.plugins_.admob.prototype.cnds.OnInterstitialReceived, self);
+		};
+		this.AdMob["onInterstitialAdLoaded"] = function ()
+		{
+			self.runtime.trigger(cr.plugins_.admob.prototype.cnds.OnInterstitialReceived, self);
+		};
+		this.AdMob["onFullScreenAdShown"] = function ()
+		{
+			self.isShowingInterstitial = true;
+			self.runtime.trigger(cr.plugins_.admob.prototype.cnds.OnInterstitialPresented, self);
+		};
+		this.AdMob["onInterstitialAdShown"] = function ()
+		{
+			self.isShowingInterstitial = true;
+			self.runtime.trigger(cr.plugins_.admob.prototype.cnds.OnInterstitialPresented, self);
+		};
+		this.AdMob["onFullScreenAdClosed"] = function ()
+		{
+			self.isShowingInterstitial = false;
+			self.runtime.trigger(cr.plugins_.admob.prototype.cnds.OnInterstitialDismissed, self);
+		};
+		this.AdMob["onInterstitialAdHidden"] = function ()
+		{
+			self.isShowingInterstitial = false;
+			self.runtime.trigger(cr.plugins_.admob.prototype.cnds.OnInterstitialDismissed, self);
+		};
+		this.AdMob["onBannerAdPreloaded"] = function ()
+		{
+			self.runtime.trigger(cr.plugins_.admob.prototype.cnds.OnBannerAdReceived, self);
+		};
+	};
+	function indexToAdSize(i)
+	{
+		switch (i) {
+		case 0:		return "SMART_BANNER";
+		case 1:		return "BANNER";
+		case 2:		return "MEDIUM_RECTANGLE";
+		case 3:		return "FULL_BANNER";
+		case 4:		return "LEADERBOARD";
+		case 5:		return "SKYSCRAPER";
+		}
+		return "SMART_BANNER";
+	};
+	function indexToAdPosition(i)
+	{
+		switch (i) {
+		case 0:		return "top-left";
+		case 1:		return "top-center";
+		case 2:		return "top-right";
+		case 3:		return "left";
+		case 4:		return "center";
+		case 5:		return "right";
+		case 6:		return "bottom-left";
+		case 7:		return "bottom-center";
+		case 8:		return "bottom-right";
+		}
+		return "bottom-center";
+	};
+	function Cnds() {};
+	Cnds.prototype.IsShowingBanner = function()
+	{
+		return this.isShowingBannerAd;
+	};
+	Cnds.prototype.IsShowingInterstitial = function()
+	{
+		return this.isShowingInterstitial;
+	};
+	Cnds.prototype.OnInterstitialReceived = function()
+	{
+		return true;
+	};
+	Cnds.prototype.OnInterstitialPresented = function()
+	{
+		return true;
+	};
+	Cnds.prototype.OnInterstitialDismissed = function()
+	{
+		return true;
+	};
+	Cnds.prototype.OnBannerAdReceived = function()
+	{
+		return true;
+	};
+	pluginProto.cnds = new Cnds();
+	function Acts() {};
+	Acts.prototype.ShowBanner = function (pos_, size_)
+	{
+		if (!isSupported)
+			return;
+		this.AdMob["showBannerAd"](indexToAdPosition(pos_), indexToAdSize(size_));
+		this.isShowingBannerAd = true;
+	};
+	Acts.prototype.AutoShowInterstitial = function ()
+	{
+		if (!isSupported)
+			return;
+		if (this.AdMob["showInterstitialAd"])
+			this.AdMob["showInterstitialAd"]();
+		else if (this.AdMob["showFullScreenAd"])
+			this.AdMob["showFullScreenAd"]();
+	};
+	Acts.prototype.PreloadInterstitial = function ()
+	{
+		if (!isSupported)
+			return;
+		if (this.AdMob["preloadInterstitialAd"])
+			this.AdMob["preloadInterstitialAd"]();
+		else if (this.AdMob["preloadFullScreenAd"])
+			this.AdMob["preloadFullScreenAd"]();
+	};
+	Acts.prototype.ShowInterstitial = function ()
+	{
+		if (!isSupported)
+			return;
+		if (this.AdMob["showInterstitialAd"])
+			this.AdMob["showInterstitialAd"]();
+		else if (this.AdMob["showFullScreenAd"])
+			this.AdMob["showFullScreenAd"]();
+	};
+	Acts.prototype.HideBanner = function ()
+	{
+		if (!isSupported)
+			return;
+		this.AdMob["hideBannerAd"]();
+		this.isShowingBannerAd = false;
+	};
+	Acts.prototype.ReloadInterstitial = function ()
+	{
+		if (!isSupported)
+			return;
+		if (this.AdMob["reloadInterstitialAd"])
+			this.AdMob["reloadInterstitialAd"]();
+		else if (this.AdMob["reloadFullScreenAd"])
+			this.AdMob["reloadFullScreenAd"]();
+	};
+	Acts.prototype.ReloadBanner = function ()
+	{
+		if (!isSupported)
+			return;
+		this.AdMob["reloadBannerAd"]();
+	};
+	Acts.prototype.PreloadBanner = function ()
+	{
+		if (!isSupported)
+			return;
+		this.AdMob["preloadBannerAd"]();
+	};
+	pluginProto.acts = new Acts();
+	function Exps() {};
+	pluginProto.exps = new Exps();
+}());
 ;
 ;
 cr.behaviors.Bullet = function(runtime)
@@ -28765,19 +27997,18 @@ cr.behaviors.wrap = function(runtime)
 	};
 }());
 cr.getObjectRefTable = function () { return [
+	cr.plugins_.admob,
 	cr.plugins_.Arr,
-	cr.plugins_.Browser,
 	cr.plugins_.Audio,
+	cr.plugins_.Browser,
 	cr.plugins_.Function,
-	cr.plugins_.PhonegapLeadbolt,
-	cr.plugins_.CV_MobileMasterIAP,
 	cr.plugins_.Mouse,
 	cr.plugins_.Particles,
-	cr.plugins_.Sprite,
 	cr.plugins_.Text,
+	cr.plugins_.Sprite,
+	cr.plugins_.Touch,
 	cr.plugins_.Spritefont2,
 	cr.plugins_.WebStorage,
-	cr.plugins_.Touch,
 	cr.behaviors.Pin,
 	cr.behaviors.DragnDrop,
 	cr.behaviors.Sin,
@@ -28834,6 +28065,7 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Particles.prototype.acts.Destroy,
 	cr.system_object.prototype.exps["int"],
 	cr.system_object.prototype.exps.random,
+	cr.plugins_.admob.prototype.acts.ShowInterstitial,
 	cr.plugins_.Sprite.prototype.acts.SetY,
 	cr.system_object.prototype.exps.scrolly,
 	cr.behaviors.Fade.prototype.acts.StartFade,
@@ -28857,7 +28089,6 @@ cr.getObjectRefTable = function () { return [
 	cr.system_object.prototype.acts.ResetGlobals,
 	cr.plugins_.Spritefont2.prototype.cnds.CompareInstanceVar,
 	cr.plugins_.Spritefont2.prototype.acts.SetY,
-	cr.plugins_.PhonegapLeadbolt.prototype.acts.ShowAppAdInterstitial,
 	cr.plugins_.Audio.prototype.acts.Preload,
 	cr.system_object.prototype.cnds.OnLayoutEnd,
 	cr.plugins_.Audio.prototype.acts.StopAll
